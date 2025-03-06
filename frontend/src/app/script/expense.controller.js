@@ -233,8 +233,7 @@ export const getMonthlyExpense = async () => {
   }
 };
 
-const result = await getMonthlyExpense();
-console.log(result);
+export const getWeeklyExpenses = async () => {};
 
 export const deleteExpense = async (id) => {
   if (!id) {
