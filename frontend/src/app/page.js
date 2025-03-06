@@ -5,10 +5,12 @@ import Header from "../../components/Header";
 import CategoryBudget from "../../components/CategoryBudget";
 import ExampleChart from "../../components/Graph";
 import Example from "../../components/WeekGraph";
+import NameImagePage from "../../components/CategoryCard";
 
 export default function Home() {
   return (
     <>
+      <NameImagePage />
       <HomeSavingCard />
       <ExampleChart />
       <Example />
