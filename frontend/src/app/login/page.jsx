@@ -1,17 +1,51 @@
 'use client';
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
 
 const SignInPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState({});
+
+  const router = useRouter();
+
+  const validateForm = () => {
+    let newError = {};
+    if (!email || !email.trim()) newError.email = 'Email is required';
+    if (!password || !password.trim())
+      newError.password = 'Password is required';
+
+    setError(newError);
+    return Object.keys(newError).length === 0;
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Handle form submission, e.g., send data to an API
-    console.log('Email:', email);
-    console.log('Password:', password);
+    validateForm();
+    const login = async () => {
+      try {
+        const response = await fetch(
+          'https://student-budget-planner.onrender.com/api/v1/user/login',
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ email, password }),
+          },
+        );
+        const data = await response.json();
+        if (!response.ok) {
+          setError({ login: 'Invalid Credintials. Try again!' });
+          return;
+        }
+
+        router.push('/');
+      } catch (error) {}
+    };
+    login();
   };
 
   return (
@@ -64,7 +98,8 @@ const SignInPage = () => {
           {/* Login Button */}
           <button
             type="submit"
-            className="w-full bg-indigo-600 text-white font-semibold py-3 rounded-lg hover:bg-indigo-300"
+            onClick={handleSubmit}
+            className="w-full bg-indigo-600 text-white font-semibold py-3 rounded-lg hover:bg-indigo-300 cursor-pointer"
           >
             Login
           </button>
@@ -77,6 +112,11 @@ const SignInPage = () => {
             </a>
           </p>
         </form>
+        {error.login && (
+          <span className="block text-center text-sm text-red-500 mt-4">
+            {error.login}
+          </span>
+        )}
       </div>
     </div>
   );
