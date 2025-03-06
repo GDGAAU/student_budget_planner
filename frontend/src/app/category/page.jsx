@@ -1,35 +1,9 @@
 "use client";
 
-import { useState } from "react";
-import Image from "next/image";
-
-import {
-  FaUtensils,
-  FaTshirt,
-  FaBus,
-  FaBook,
-  FaFilm,
-  FaShoppingBasket,
-  FaFirstAid,
-  FaPiggyBank,
-} from "react-icons/fa";
-
-import FoodIcon from "../../../public/icons/food_icon.png";
-
-import {
-  Button,
-  Card,
-  CardContent,
-  CardHeader,
-  TextField,
-  Typography,
-  Grid,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-} from "@mui/material";
-
+import { Dela_Gothic_One } from "next/font/google";
+import { useState, useCallback } from "react";
+import classes from "./page.module.css";
+import { getAllCategories } from "../script/category.controller";
 export default function CategoryPage() {
   const [selectedSection, setSelectedSection] = useState("Expenses");
   const [selectedCategory, setSelectedCategory] = useState(null);
@@ -37,158 +11,179 @@ export default function CategoryPage() {
   const [income, setIncome] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentPlan, setCurrentPlan] = useState("");
-
   const categories = [
-    {
-      name: "Food",
-      icon: (
-        <Image
-          src={FoodIcon}
-          alt="Food Icon"
-          className="bg-yellow-100 p-2 w-[50%] rounded-lg"
-        />
-      ),
-    },
-    { name: "Clothes", icon: <FaTshirt /> },
-    { name: "Transportation", icon: <FaBus /> },
-    { name: "Books", icon: <FaBook /> },
-    { name: "Entertainment", icon: <FaFilm /> },
-    { name: "Grocery", icon: <FaShoppingBasket /> },
-    { name: "Emergency", icon: <FaFirstAid /> },
-    { name: "Saving", icon: <FaPiggyBank /> },
+    { name: "Food", img: "/icons/food_icon.png" },
+    { name: "Clothes", img: "/icons/clothes_icon.png" },
+    { name: "Transportation", img: "/icons/transport_icon.png" },
+    { name: "Books", img: "/icons/books_icon.png" },
   ];
 
-  const handleCategoryClick = (category) => {
-    setSelectedCategory(category);
-    setCurrentPlan(categoryPlans[category] || "");
-    setIsModalOpen(true);
-  };
+  const c = getAllCategories();
+  console.log(c);
 
-  const handlePlanSubmit = (e) => {
-    e.preventDefault();
-    setCategoryPlans((prev) => ({
-      ...prev,
-      [selectedCategory]: currentPlan,
-    }));
-    setIsModalOpen(false);
-  };
+  // Handle category click
+  const handleCategoryClick = useCallback(
+    (category) => {
+      setSelectedCategory(category);
+      setCurrentPlan(categoryPlans[category] || "");
+      setIsModalOpen(true);
+    },
+    [categoryPlans]
+  );
 
-  const handleIncomeSubmit = (e) => {
-    e.preventDefault();
-    alert(`Income added: $${income}`);
-    setIncome("");
-  };
+  // Submit Plan
+  const handlePlanSubmit = useCallback(
+    (e) => {
+      e.preventDefault();
+      setCategoryPlans((prev) => ({
+        ...prev,
+        [selectedCategory]: currentPlan,
+      }));
+      setIsModalOpen(false);
+    },
+    [selectedCategory, currentPlan]
+  );
+
+  // Submit Income
+  const handleIncomeSubmit = useCallback(
+    (e) => {
+      e.preventDefault();
+      alert(`Income added: $${income}`);
+      setIncome("");
+    },
+    [income]
+  );
 
   return (
     <div className="min-h-screen bg-gradient-to-r from-gray-50 to-red-50 p-4 sm:p-6">
       {/* Section Toggle Buttons */}
-      <div className="flex justify-center mb-8">
-        <Button
-          onClick={() => setSelectedSection("Expenses")}
-          variant={selectedSection === "Expenses" ? "contained" : "outlined"}
-          color={selectedSection === "Expenses" ? "error" : "inherit"}
-          className="rounded-l-lg"
-        >
-          Expenses
-        </Button>
-        <Button
-          onClick={() => setSelectedSection("Income")}
-          variant={selectedSection === "Income" ? "contained" : "outlined"}
-          color={selectedSection === "Income" ? "success" : "inherit"}
-          className="rounded-r-lg"
-        >
-          Income
-        </Button>
+      <div className="flex justify-center gap-4 mb-8">
+        {["Expenses", "Income"].map((section) => (
+          <button
+            key={section}
+            onClick={() => setSelectedSection(section)}
+            className={`px-6 py-2 rounded-lg transition-all duration-300 shadow-md ${
+              selectedSection === section
+                ? section === "Expenses"
+                  ? "bg-red-500 text-white hover:bg-red-600"
+                  : "bg-green-500 text-white hover:bg-green-600"
+                : "bg-white text-gray-700 hover:bg-gray-100"
+            }`}
+          >
+            {section}
+          </button>
+        ))}
       </div>
 
-      {/* Left Section - Expenses */}
+      {/* Expenses Section */}
       {selectedSection === "Expenses" && (
         <div className="max-w-2xl mx-auto bg-white p-6 rounded-lg shadow-lg">
-          <Typography variant="h5" gutterBottom>
-            Expenses
-          </Typography>
-          <Grid container spacing={3}>
-            {categories.map(({ name, icon }) => (
-              <Grid item xs={12} sm={6} md={4} key={name}>
-                <Card
-                  onClick={() => handleCategoryClick(name)}
-                  className="cursor-pointer hover:shadow-md transition-shadow"
-                >
-                  <CardHeader
-                    avatar={<div className="text-red-500">{icon}</div>}
-                    title={name}
-                    titleTypographyProps={{ variant: "h6" }}
-                  />
-                  <CardContent>
-                    {categoryPlans[name] && (
-                      <Typography variant="body2" color="textSecondary">
-                        Plan: ${categoryPlans[name]}
-                      </Typography>
-                    )}
-                  </CardContent>
-                </Card>
-              </Grid>
+          <h2 className="text-xl font-semibold mb-4">Expenses</h2>
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+            {categories.map(({ name, img }) => (
+              <CategoryCard
+                key={name}
+                name={name}
+                img={img}
+                onClick={() => handleCategoryClick(name)}
+                plan={categoryPlans[name]}
+              />
             ))}
-          </Grid>
+          </div>
         </div>
       )}
 
-      {/* Right Section - Income */}
+      {/* Income Section */}
       {selectedSection === "Income" && (
         <div className="max-w-2xl mx-auto bg-white p-6 rounded-lg shadow-lg">
-          <Typography variant="h5" gutterBottom>
-            Income
-          </Typography>
+          <h2 className="text-xl font-semibold mb-4">Income</h2>
           <form onSubmit={handleIncomeSubmit} className="space-y-4">
-            <TextField
-              label="Income Amount"
+            <input
               type="number"
+              placeholder="Enter income amount"
               value={income}
               onChange={(e) => setIncome(e.target.value)}
-              fullWidth
-              variant="outlined"
+              className="w-full p-2 border rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all"
             />
-            <Button type="submit" variant="contained" color="success" fullWidth>
+            <button
+              type="submit"
+              className="w-full bg-green-500 text-white py-2 rounded-md hover:bg-green-600 transition-all shadow-md"
+            >
               Add Income
-            </Button>
+            </button>
           </form>
         </div>
       )}
 
       {/* Modal for Category Plan */}
-      <Dialog open={isModalOpen} onClose={() => setIsModalOpen(false)}>
-        <DialogTitle>
-          <div className="flex items-center space-x-2">
-            {categories.find((cat) => cat.name === selectedCategory)?.icon}
-            <Typography variant="h6">Plan for {selectedCategory}</Typography>
-          </div>
-        </DialogTitle>
-        <DialogContent>
+      {isModalOpen && selectedCategory && (
+        <Modal onClose={() => setIsModalOpen(false)}>
+          <h3 className="text-lg font-semibold mb-4">
+            Plan for {selectedCategory}
+          </h3>
           <form onSubmit={handlePlanSubmit} className="space-y-4">
-            <TextField
-              label="Planned Amount"
+            <input
               type="number"
+              placeholder="Enter planned amount"
               value={currentPlan}
               onChange={(e) => setCurrentPlan(e.target.value)}
-              fullWidth
-              variant="outlined"
-              placeholder="Enter planned amount"
+              className="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
             />
-            <DialogActions>
-              <Button
+            <div className="flex justify-end gap-2">
+              <button
+                type="button"
                 onClick={() => setIsModalOpen(false)}
-                variant="outlined"
-                color="secondary"
+                className="px-4 py-2 border rounded-md hover:bg-gray-100 transition-all shadow-md"
               >
                 Cancel
-              </Button>
-              <Button type="submit" variant="contained" color="primary">
+              </button>
+              <button
+                type="submit"
+                className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-all shadow-md"
+              >
                 Save Plan
-              </Button>
-            </DialogActions>
+              </button>
+            </div>
           </form>
-        </DialogContent>
-      </Dialog>
+        </Modal>
+      )}
+    </div>
+  );
+}
+
+// Reusable Card Component
+function CategoryCard({ name, img, onClick, plan }) {
+  return (
+    <div
+      onClick={onClick}
+      className="cursor-pointer border rounded-lg p-4 shadow-md hover:shadow-lg hover:scale-105 hover:bg-gray-50 transition-all duration-300"
+    >
+      <img src={img} alt={name} className="w-20 h-20 mx-auto mb-2 rounded-lg" />
+      <h3 className="text-center font-semibold">{name}</h3>
+      {plan && (
+        <p className="text-sm text-center text-gray-600">Plan: ${plan}</p>
+      )}
+    </div>
+  );
+}
+
+// Reusable Modal Component
+function Modal({ children, onClose }) {
+  return (
+    <div
+      className={`fixed inset-0 flex items-center justify-center ${classes.modal}`}
+    >
+      <div
+        className={` rounded-2xl p-6 w-11/12 sm:w-96 shadow-2xl relative ${classes.card}`}
+      >
+        {children}
+        <button
+          onClick={onClose}
+          className="absolute top-3 right-3 text-white bg-black bg-opacity-30 hover:bg-opacity-50 p-2 rounded-full transition-all"
+        >
+          ✕
+        </button>
+      </div>
     </div>
   );
 }
