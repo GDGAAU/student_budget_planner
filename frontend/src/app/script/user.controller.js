@@ -1,3 +1,4 @@
+'use server';
 import prisma from '../lib/prisma.js';
 
 export const createUser = async (id, fullname, email, budget, password) => {

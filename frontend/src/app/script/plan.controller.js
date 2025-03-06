@@ -1,3 +1,4 @@
+'use server';
 import prisma from '../lib/prisma.js';
 
 /**
@@ -31,7 +32,7 @@ export const createPlan = async (categoryId, amount, date = new Date()) => {
   try {
     // Check if the user exists
     const user = await prisma.user.findUnique({
-      where: { id: userId },
+      where: { id: 1 },
     });
 
     if (!user) {
@@ -52,7 +53,7 @@ export const createPlan = async (categoryId, amount, date = new Date()) => {
       data: {
         amount,
         categoryId,
-        userId,
+        userId: 1,
         date,
       },
     });

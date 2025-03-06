@@ -1,3 +1,5 @@
+'use server';
+import { selectClasses } from '@mui/material';
 import prisma from '../lib/prisma.js';
 
 /**
@@ -66,16 +68,6 @@ export const createExpense = async (userId = 1, categoryId, amount) => {
     throw error; // Re-throw the error for the caller to handle
   }
 };
-
-// Example usage
-(async () => {
-  try {
-    const expense = await createExpense(1, 2, -50.0); // userId: 1, categoryId: 2, amount: 100.0
-    console.log('Created Expense:', expense);
-  } catch (error) {
-    console.error('Failed to create expense:', error.message);
-  }
-})();
 
 /**
  * Update an existing expense.
@@ -148,6 +140,101 @@ export const updateExpense = async (expenseId, amount, categoryId) => {
     await prisma.$disconnect(); // Disconnect Prisma Client
   }
 };
+
+export const getAllExpenses = async () => {
+  try {
+    // Fetch all expenses
+    const expenses = await prisma.expense.findMany({
+      select: {
+        id: true,
+        amount: true,
+        categoryId: true,
+        userId: true,
+      },
+    });
+
+    console.log('Expenses fetched successfully:', expenses);
+    return expenses;
+  } catch (error) {
+    console.error('Error fetching expenses:', error.message);
+    throw error; // Re-throw the error for the caller to handle
+  }
+};
+
+/**
+ * Fetch daily expenses for the current day.
+ * @returns {Promise<Array<Object>>} - Array of expense objects for the current day.
+ */
+export const getDailyExpense = async () => {
+  try {
+    // Get the start and end of the current day
+    const now = new Date();
+    const startOfDay = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate(),
+    );
+    const endOfDay = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate() + 1,
+    );
+
+    // Fetch expenses for the current day
+    const expenses = await prisma.expense.findMany({
+      where: {
+        date: {
+          gte: startOfDay, // Greater than or equal to the start of the day
+          lt: endOfDay, // Less than the start of the next day
+        },
+      },
+      include: {
+        category: true, // Include category details
+      },
+    });
+
+    // console.log('Daily expenses fetched successfully:', expenses);
+    return expenses;
+  } catch (error) {
+    console.error('Error fetching daily expenses:', error.message);
+    throw error; // Re-throw the error for the caller to handle
+  } finally {
+    await prisma.$disconnect(); // Disconnect Prisma Client
+  }
+};
+
+export const getMonthlyExpense = async () => {
+  try {
+    // Get the start and end of the current month
+    const now = new Date();
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+
+    // Fetch expenses for the current month
+    const expenses = await prisma.expense.findMany({
+      where: {
+        date: {
+          gte: startOfMonth, // Greater than or equal to the start of the month
+          lt: endOfMonth, // Less than the start of the next month
+        },
+      },
+      include: {
+        category: true, // Include category details
+      },
+    });
+
+    // console.log('Monthly expenses fetched successfully:', expenses);
+    return expenses;
+  } catch (error) {
+    console.error('Error fetching monthly expenses:', error.message);
+    throw error; // Re-throw the error for the caller to handle
+  } finally {
+    await prisma.$disconnect(); // Disconnect Prisma Client
+  }
+};
+
+const result = await getMonthlyExpense();
+console.log(result);
 
 export const deleteExpense = async (id) => {
   if (!id) {

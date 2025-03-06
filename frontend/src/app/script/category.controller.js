@@ -1,3 +1,4 @@
+'use server';
 import prisma from '../lib/prisma.js';
 
 /**
@@ -24,7 +25,7 @@ export const getAllCategories = async () => {
 
 export const addCategory = async (name) => {
   if (!name) {
-    throw new Error('name is required');
+    throw new Error('vategory name is required');
   }
   try {
     const newCategory = await prisma.category.create({
