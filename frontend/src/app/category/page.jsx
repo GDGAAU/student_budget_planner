@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
+
 import {
   FaUtensils,
   FaTshirt,
@@ -11,22 +13,21 @@ import {
   FaFirstAid,
   FaPiggyBank,
 } from "react-icons/fa";
+
+import FoodIcon from "../../../public/icons/food_icon.png";
+
 import {
   Button,
   Card,
   CardContent,
   CardHeader,
-  CardTitle,
-  Input,
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogFooter,
-  DialogTitle,
-  DialogDescription,
   TextField,
   Typography,
   Grid,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
 } from "@mui/material";
 
 export default function CategoryPage() {
@@ -38,14 +39,23 @@ export default function CategoryPage() {
   const [currentPlan, setCurrentPlan] = useState("");
 
   const categories = [
-    { name: "Food", icon: <FaUtensils className="w-6 h-6" /> },
-    { name: "Clothes", icon: <FaTshirt className="w-6 h-6" /> },
-    { name: "Transportation", icon: <FaBus className="w-6 h-6" /> },
-    { name: "Books", icon: <FaBook className="w-6 h-6" /> },
-    { name: "Entertainment", icon: <FaFilm className="w-6 h-6" /> },
-    { name: "Grocery", icon: <FaShoppingBasket className="w-6 h-6" /> },
-    { name: "Emergency", icon: <FaFirstAid className="w-6 h-6" /> },
-    { name: "Saving", icon: <FaPiggyBank className="w-6 h-6" /> },
+    {
+      name: "Food",
+      icon: (
+        <Image
+          src={FoodIcon}
+          alt="Food Icon"
+          className="bg-yellow-100 p-2 w-[50%] rounded-lg"
+        />
+      ),
+    },
+    { name: "Clothes", icon: <FaTshirt /> },
+    { name: "Transportation", icon: <FaBus /> },
+    { name: "Books", icon: <FaBook /> },
+    { name: "Entertainment", icon: <FaFilm /> },
+    { name: "Grocery", icon: <FaShoppingBasket /> },
+    { name: "Emergency", icon: <FaFirstAid /> },
+    { name: "Saving", icon: <FaPiggyBank /> },
   ];
 
   const handleCategoryClick = (category) => {
@@ -76,14 +86,16 @@ export default function CategoryPage() {
         <Button
           onClick={() => setSelectedSection("Expenses")}
           variant={selectedSection === "Expenses" ? "contained" : "outlined"}
-          className="px-6 py-2 rounded-l-lg transition-all"
+          color={selectedSection === "Expenses" ? "error" : "inherit"}
+          className="rounded-l-lg"
         >
           Expenses
         </Button>
         <Button
           onClick={() => setSelectedSection("Income")}
           variant={selectedSection === "Income" ? "contained" : "outlined"}
-          className="px-6 py-2 rounded-r-lg transition-all"
+          color={selectedSection === "Income" ? "success" : "inherit"}
+          className="rounded-r-lg"
         >
           Income
         </Button>
@@ -92,24 +104,21 @@ export default function CategoryPage() {
       {/* Left Section - Expenses */}
       {selectedSection === "Expenses" && (
         <div className="max-w-2xl mx-auto bg-white p-6 rounded-lg shadow-lg">
-          <Typography variant="h5" className="mb-6">
+          <Typography variant="h5" gutterBottom>
             Expenses
           </Typography>
-          <Grid container spacing={4}>
+          <Grid container spacing={3}>
             {categories.map(({ name, icon }) => (
               <Grid item xs={12} sm={6} md={4} key={name}>
                 <Card
                   onClick={() => handleCategoryClick(name)}
-                  className="cursor-pointer p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-all"
+                  className="cursor-pointer hover:shadow-md transition-shadow"
                 >
-                  <CardHeader>
-                    <CardTitle>
-                      <div className="flex items-center space-x-3">
-                        <div className="text-red-500">{icon}</div>
-                        <Typography variant="h6">{name}</Typography>
-                      </div>
-                    </CardTitle>
-                  </CardHeader>
+                  <CardHeader
+                    avatar={<div className="text-red-500">{icon}</div>}
+                    title={name}
+                    titleTypographyProps={{ variant: "h6" }}
+                  />
                   <CardContent>
                     {categoryPlans[name] && (
                       <Typography variant="body2" color="textSecondary">
@@ -127,10 +136,10 @@ export default function CategoryPage() {
       {/* Right Section - Income */}
       {selectedSection === "Income" && (
         <div className="max-w-2xl mx-auto bg-white p-6 rounded-lg shadow-lg">
-          <Typography variant="h5" className="mb-6">
+          <Typography variant="h5" gutterBottom>
             Income
           </Typography>
-          <form onSubmit={handleIncomeSubmit} className="space-y-6">
+          <form onSubmit={handleIncomeSubmit} className="space-y-4">
             <TextField
               label="Income Amount"
               type="number"
@@ -139,7 +148,7 @@ export default function CategoryPage() {
               fullWidth
               variant="outlined"
             />
-            <Button type="submit" variant="contained" color="primary" fullWidth>
+            <Button type="submit" variant="contained" color="success" fullWidth>
               Add Income
             </Button>
           </form>
@@ -148,20 +157,13 @@ export default function CategoryPage() {
 
       {/* Modal for Category Plan */}
       <Dialog open={isModalOpen} onClose={() => setIsModalOpen(false)}>
+        <DialogTitle>
+          <div className="flex items-center space-x-2">
+            {categories.find((cat) => cat.name === selectedCategory)?.icon}
+            <Typography variant="h6">Plan for {selectedCategory}</Typography>
+          </div>
+        </DialogTitle>
         <DialogContent>
-          <DialogHeader>
-            <DialogTitle>
-              <div className="flex items-center space-x-3">
-                {categories.find((cat) => cat.name === selectedCategory)?.icon}
-                <Typography variant="h6">
-                  {selectedCategory} Planning
-                </Typography>
-              </div>
-            </DialogTitle>
-            <DialogDescription>
-              Enter the planned amount for {selectedCategory}
-            </DialogDescription>
-          </DialogHeader>
           <form onSubmit={handlePlanSubmit} className="space-y-4">
             <TextField
               label="Planned Amount"
@@ -172,10 +174,7 @@ export default function CategoryPage() {
               variant="outlined"
               placeholder="Enter planned amount"
             />
-            <DialogFooter>
-              <Button type="submit" variant="contained" color="primary">
-                Save Changes
-              </Button>
+            <DialogActions>
               <Button
                 onClick={() => setIsModalOpen(false)}
                 variant="outlined"
@@ -183,7 +182,10 @@ export default function CategoryPage() {
               >
                 Cancel
               </Button>
-            </DialogFooter>
+              <Button type="submit" variant="contained" color="primary">
+                Save Plan
+              </Button>
+            </DialogActions>
           </form>
         </DialogContent>
       </Dialog>
