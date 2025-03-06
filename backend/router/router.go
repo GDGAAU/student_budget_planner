@@ -31,6 +31,7 @@ func (r *Router) RegisterRoute() {
 	userRoute.Handle("/user/login", http.HandlerFunc(userHandler.Login)).Methods("POST")
 	userRoute.Handle("/user/register", http.HandlerFunc(userHandler.Register)).Methods("POST")
 	userRoute.Handle("/user/update-badge", http.HandlerFunc(userHandler.UpdateBadge)).Methods("PUT")
+	userRoute.Handle("/user/ask-gemini", http.HandlerFunc(userHandler.AskGemini)).Methods("POST")
 
 }
 func (r *Router) Run(addr string, router *mux.Router) error {
