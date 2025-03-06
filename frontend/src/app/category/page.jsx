@@ -1,9 +1,10 @@
 "use client";
 
 import { Dela_Gothic_One } from "next/font/google";
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect, use } from "react";
 import classes from "./page.module.css";
 import { getAllCategories } from "../script/category.controller";
+import { createExpense } from "../script/expense.controller";
 export default function CategoryPage() {
   const [selectedSection, setSelectedSection] = useState("Expenses");
   const [selectedCategory, setSelectedCategory] = useState(null);
@@ -11,15 +12,22 @@ export default function CategoryPage() {
   const [income, setIncome] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentPlan, setCurrentPlan] = useState("");
-  const categories = [
-    { name: "Food", img: "/icons/food_icon.png" },
-    { name: "Clothes", img: "/icons/clothes_icon.png" },
-    { name: "Transportation", img: "/icons/transport_icon.png" },
-    { name: "Books", img: "/icons/books_icon.png" },
-  ];
+  // const categories = [
+  //   { name: "Food", img: "/icons/food_icon.png" },
+  //   { name: "Clothes", img: "/icons/clothes_icon.png" },
+  //   { name: "Transportation", img: "/icons/transport_icon.png" },
+  //   { name: "Books", img: "/icons/books_icon.png" },
+  // ];
+  const [categories, setCategory] = useState([]);
 
-  const c = getAllCategories();
-  console.log(c);
+  useEffect(() => {
+    const fetchData = async () => {
+      const c = await getAllCategories();
+      setCategory(c);
+    };
+    fetchData();
+  }, []);
+  console.log(categories);
 
   // Handle category click
   const handleCategoryClick = useCallback(
@@ -32,9 +40,22 @@ export default function CategoryPage() {
   );
 
   // Submit Plan
+  // const handlePlanSubmit = useCallback(
+  //   (e) => {
+  //     e.preventDefault();
+  //     setCategoryPlans((prev) => ({
+  //       ...prev,
+  //       [selectedCategory]: currentPlan,
+  //     }));
+  //     setIsModalOpen(false);
+  //   },
+  //   [selectedCategory, currentPlan]
+  // );
+
   const handlePlanSubmit = useCallback(
     (e) => {
       e.preventDefault();
+      console.log("Saved Plan:", currentPlan); // Log the current input value
       setCategoryPlans((prev) => ({
         ...prev,
         [selectedCategory]: currentPlan,
@@ -53,6 +74,12 @@ export default function CategoryPage() {
     },
     [income]
   );
+
+  const addExpense = async () => {
+    console.log(selectedCategory);
+    console.log(currentPlan);
+    await createExpense(1, selectedCategory, parseFloat(currentPlan));
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-r from-gray-50 to-red-50 p-4 sm:p-6">
@@ -80,12 +107,12 @@ export default function CategoryPage() {
         <div className="max-w-2xl mx-auto bg-white p-6 rounded-lg shadow-lg">
           <h2 className="text-xl font-semibold mb-4">Expenses</h2>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-            {categories.map(({ name, img }) => (
+            {categories.map(({ id, name, image }) => (
               <CategoryCard
-                key={name}
+                key={id}
                 name={name}
-                img={img}
-                onClick={() => handleCategoryClick(name)}
+                img={image}
+                onClick={() => handleCategoryClick(id, name)}
                 plan={categoryPlans[name]}
               />
             ))}
@@ -139,6 +166,7 @@ export default function CategoryPage() {
               </button>
               <button
                 type="submit"
+                onClick={(id) => addExpense()}
                 className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-all shadow-md"
               >
                 Save Plan
@@ -152,9 +180,10 @@ export default function CategoryPage() {
 }
 
 // Reusable Card Component
-function CategoryCard({ name, img, onClick, plan }) {
+function CategoryCard({ id, name, img, onClick, plan }) {
   return (
     <div
+      key={id}
       onClick={onClick}
       className="cursor-pointer border rounded-lg p-4 shadow-md hover:shadow-lg hover:scale-105 hover:bg-gray-50 transition-all duration-300"
     >

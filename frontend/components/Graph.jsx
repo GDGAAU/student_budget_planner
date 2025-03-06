@@ -13,18 +13,18 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
-const data = [
-  { name: "Page A", expense: 4000, planed: 2400, amt: 2400 },
-  { name: "Page B", expense: 3000, planed: 1398, amt: 2210 },
-  { name: "Page C", expense: 2000, planed: 9800, amt: 2290 },
-  { name: "Page D", expense: 2780, planed: 3908, amt: 2000 },
-  { name: "Page E", expense: 1890, planed: 4800, amt: 2181 },
-  { name: "Page F", expense: 2390, planed: 3800, amt: 2500 },
-  { name: "Page G", expense: 3490, planed: 4300, amt: 2100 },
-];
+// const data = [
+//   { name: "Page A", expense: 4000, planed: 2400, amt: 2400 },
+//   { name: "Page B", expense: 3000, planed: 1398, amt: 2210 },
+//   { name: "Page C", expense: 2000, planed: 9800, amt: 2290 },
+//   { name: "Page D", expense: 2780, planed: 3908, amt: 2000 },
+//   { name: "Page E", expense: 1890, planed: 4800, amt: 2181 },
+//   { name: "Page F", expense: 2390, planed: 3800, amt: 2500 },
+//   { name: "Page G", expense: 3490, planed: 4300, amt: 2100 },
+// ];
 
 const ExampleChart = () => {
-  const [d, setData] = useState([]);
+  const [data, setData] = useState([]);
   useEffect(() => {
     const fetchData = async () => {
       const dailyExpense = await getDailyExpense();
@@ -32,7 +32,8 @@ const ExampleChart = () => {
     };
     fetchData();
   }, []);
-  console.log(d);
+  console.log(data);
+
   return (
     <div style={{ width: "50%", height: 400 }}>
       <ResponsiveContainer width="100%" height="100%">

@@ -22,6 +22,16 @@ const data = [
 ];
 
 const LineChartComponent = () => {
+  //   const [data, setData] = useState([]);
+  //   useEffect(() => {
+  //     const fetchData = async () => {
+  //       const dailyExpense = await getDailyExpense();
+  //       setData(dailyExpense);
+  //     };
+  //     fetchData();
+  //   }, []);
+  //   console.log(data);
+
   return (
     <div style={{ width: "100%", height: 400 }}>
       <ResponsiveContainer width="100%" height="100%">
