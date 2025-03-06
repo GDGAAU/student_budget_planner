@@ -1,16 +1,16 @@
-import React from 'react';
+import React from "react";
 
 const mock = {
-  month: 'March',
-  budget: '1000',
-  spent: '500',
+  month: "March",
+  budget: "1000",
+  spent: "500",
 };
 
-const SavingsCard = () => {
+const SavingsCard = (props) => {
   return (
     <div className="bg-white p-6 rounded-2xl shadow-lg w-full max-w-sm">
       <h3 className="text-gray-500 text-sm">March Savings</h3>
-      <h2 className="text-3xl font-bold mt-1">$7,456.00</h2>
+      <h2 className="text-3xl font-bold mt-1">{props.budget || "$7,456.00"}</h2>
 
       <div className="mt-4 space-y-3">
         {/* Earned Bar */}
@@ -23,7 +23,7 @@ const SavingsCard = () => {
         <div className="w-full h-3 bg-gray-200 rounded-full">
           <div
             className="h-3 bg-blue-500 rounded-full"
-            style={{ width: '70%' }}
+            style={{ width: "70%" }}
           ></div>
         </div>
 
@@ -37,7 +37,7 @@ const SavingsCard = () => {
         <div className="w-full h-3 bg-gray-200 rounded-full">
           <div
             className="h-3 bg-red-400 rounded-full"
-            style={{ width: '20%' }}
+            style={{ width: "20%" }}
           ></div>
         </div>
       </div>
