@@ -1,5 +1,7 @@
 "use client"; // Required if using Next.js App Router
 
+import { getDailyExpense } from "@/app/script/expense.controller";
+import { useState, useEffect } from "react";
 import {
   BarChart,
   Bar,
@@ -22,6 +24,15 @@ const data = [
 ];
 
 const ExampleChart = () => {
+  const [d, setData] = useState([]);
+  useEffect(() => {
+    const fetchData = async () => {
+      const dailyExpense = await getDailyExpense();
+      setData(dailyExpense);
+    };
+    fetchData();
+  }, []);
+  console.log(d);
   return (
     <div style={{ width: "50%", height: 400 }}>
       <ResponsiveContainer width="100%" height="100%">

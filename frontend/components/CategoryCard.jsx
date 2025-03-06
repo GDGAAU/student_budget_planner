@@ -1,4 +1,6 @@
 "use client";
+import { getAllCategories } from "@/app/script/category.controller";
+import { createPlan } from "@/app/script/plan.controller";
 import { useState, useEffect } from "react";
 
 export default function NameImagePage() {
@@ -7,45 +9,35 @@ export default function NameImagePage() {
 
   useEffect(() => {
     const fetchData = async () => {
-      try {
-        const response = await fetch("/api/getAllCategories");
-        const result = await response.json();
+      const categories = await getAllCategories();
+      setData(categories);
 
-        if (!Array.isArray(result.categories)) {
-          throw new Error("Invalid API response format");
-        }
-
-        setData(result.categories);
-        setInputs(result.categories.map(({ id }) => ({ id, amount: 0 }))); // Default to "0"
-      } catch (error) {
-        console.error("Error fetching categories:", error);
-      }
+      // Initialize inputs with corresponding categories
+      setInputs(categories.map((category) => ({ id: category.id, amount: 0 })));
     };
-
     fetchData();
   }, []);
 
   const handleInputChange = (index, value) => {
-    // Ensure only integer values are accepted
     const intValue = value.replace(/\D/g, ""); // Remove non-numeric characters
-
     setInputs((prevInputs) =>
       prevInputs.map((input, i) =>
-        i === index ? { ...input, amount: parseInt(intValue) || 0 } : input
+        i === index ? { ...input, amount: parseFloat(intValue) || 0 } : input
       )
     );
     console.log(inputs);
   };
+
   const handleSubmit = async () => {
-    //     console.log(inputs);
-    //    await fetch("/api/createPlan", {
-    //       method: "POST",
-    //       body: JSON.stringify(inputs),
-    //     });
+    const filteredInputs = inputs.filter((input) => input.amount > 0);
+    console.log(filteredInputs);
+    for (const { id, amount } of filteredInputs) {
+      await createPlan(id, amount);
+    }
   };
 
   return (
-    <div>
+    <div className="w-[50%]">
       <div className="bg-gray-50 p-6 flex flex-col gap-2">
         {data.map(({ id, name, image }, index) => (
           <div
@@ -58,7 +50,7 @@ export default function NameImagePage() {
               <input
                 className="rounded-3xl h-10 bg-white w-[80%] text-center"
                 placeholder="0"
-                value={inputs[index]?.amount || 0}
+                value={inputs[index]?.amount || ""}
                 onChange={(e) => handleInputChange(index, e.target.value)}
               />
             </div>
