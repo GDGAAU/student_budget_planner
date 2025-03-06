@@ -19,17 +19,36 @@ export const getAllCategories = async () => {
   } catch (error) {
     console.error('Error fetching categories:', error.message);
     throw error; // Re-throw the error for the caller to handle
-  } finally {
-    await prisma.$disconnect(); // Disconnect Prisma Client
   }
 };
 
-// Example usage
-(async () => {
-  try {
-    const categories = await getAllCategories();
-    console.log('All Categories:', categories);
-  } catch (error) {
-    console.error('Failed to fetch categories:', error.message);
+export const addCategory = async (name) => {
+  if (!name) {
+    throw new Error('name is required');
   }
-})();
+  try {
+    const newCategory = await prisma.category.create({
+      data: {
+        name,
+      },
+    });
+    console.log('Category Created!', newCategory);
+    return newCategory;
+  } catch (error) {
+    console.log('Error adding category', error);
+  }
+};
+
+export const deleteCategory = async (id) => {
+  if (!id) {
+    throw new Error('id is required');
+  }
+  try {
+    const category = await prisma.category.delete({
+      where: { id },
+    });
+    console.log('Category deleted successfully', category);
+  } catch (error) {
+    console.error('Error deleting category');
+  }
+};

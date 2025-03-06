@@ -8,14 +8,14 @@ import prisma from '../lib/prisma.js';
  * @param {Date} date - The date of the plan (optional, defaults to current date).
  * @returns {Promise<Object>} - The created plan object or an error message.
  */
-const createPlan = async (userId, categoryId, amount, date = new Date()) => {
+export const createPlan = async (categoryId, amount, date = new Date()) => {
   // Input validation
-  if (!userId || !categoryId || !amount) {
+  if (!categoryId || !amount) {
     throw new Error('userId, categoryId, and amount are required.');
   }
 
-  if (typeof amount !== 'number' || amount <= 0) {
-    throw new Error('Amount must be a positive number.');
+  if (typeof amount !== 'number') {
+    throw new Error('Amount must be a number.');
   }
 
   if (!(date instanceof Date) || isNaN(date.getTime())) {
@@ -65,12 +65,151 @@ const createPlan = async (userId, categoryId, amount, date = new Date()) => {
   }
 };
 
+/**
+ * Update an existing plan.
+ * @param {number} planId - The ID of the plan to update.
+ * @param {number} [amount] - The new amount of the plan (optional).
+ * @param {number} [categoryId] - The new category ID of the plan (optional).
+ * @param {Date} [date] - The new date of the plan (optional, must be in the future).
+ * @returns {Promise<Object>} - The updated plan object or an error message.
+ */
+export const updatePlan = async (planId, amount, categoryId, date) => {
+  // Input validation
+  if (!planId) {
+    throw new Error('planId is required.');
+  }
+
+  if (amount && (typeof amount !== 'number' || amount <= 0)) {
+    throw new Error('Amount must be a positive number.');
+  }
+
+  if (categoryId && typeof categoryId !== 'number') {
+    throw new Error('categoryId must be a number.');
+  }
+
+  if (date && (!(date instanceof Date) || isNaN(date.getTime()))) {
+    throw new Error('Invalid date.');
+  }
+
+  // Check if the date is in the future (if provided)
+  if (date) {
+    const currentDate = new Date();
+    if (date <= currentDate) {
+      throw new Error('Date must be in the future.');
+    }
+  }
+
+  try {
+    // Check if the plan exists
+    const existingPlan = await prisma.plan.findUnique({
+      where: { id: planId },
+    });
+
+    if (!existingPlan) {
+      throw new Error('Plan not found.');
+    }
+
+    // Check if the new category exists (if categoryId is provided)
+    if (categoryId) {
+      const category = await prisma.category.findUnique({
+        where: { id: categoryId },
+      });
+
+      if (!category) {
+        throw new Error('Category not found.');
+      }
+    }
+
+    // Update the plan
+    const updatedPlan = await prisma.plan.update({
+      where: { id: planId },
+      data: {
+        amount: amount !== undefined ? amount : existingPlan.amount,
+        categoryId:
+          categoryId !== undefined ? categoryId : existingPlan.categoryId,
+        date: date !== undefined ? date : existingPlan.date,
+      },
+    });
+
+    console.log('Plan updated successfully:', updatedPlan);
+    return updatedPlan;
+  } catch (error) {
+    console.error('Error updating plan:', error.message);
+    throw error; // Re-throw the error for the caller to handle
+  }
+};
+
+/**
+ * Delete an existing plan.
+ * @param {number} planId - The ID of the plan to delete.
+ * @returns {Promise<Object>} - The deleted plan object or an error message.
+ */
+export const deletePlan = async (planId) => {
+  // Input validation
+  if (!planId) {
+    throw new Error('planId is required.');
+  }
+
+  try {
+    // Check if the plan exists
+    const existingPlan = await prisma.plan.findUnique({
+      where: { id: planId },
+    });
+
+    if (!existingPlan) {
+      throw new Error('Plan not found.');
+    }
+
+    // Delete the plan
+    const deletedPlan = await prisma.plan.delete({
+      where: { id: planId },
+    });
+
+    console.log('Plan deleted successfully:', deletedPlan);
+    return deletedPlan;
+  } catch (error) {
+    console.error('Error deleting plan:', error.message);
+    throw error; // Re-throw the error for the caller to handle
+  }
+};
+
+/**
+ * Fetch all plans for a specific user.
+ * @param {number} userId - The ID of the user.
+ * @returns {Promise<Array<Object>>} - Array of plan objects.
+ */
+const getPlansByUser = async (userId) => {
+  // Input validation
+  if (!userId) {
+    throw new Error('userId is required.');
+  }
+
+  try {
+    // Fetch all plans for the user
+    const plans = await prisma.plan.findMany({
+      where: { userId },
+      include: {
+        category: true, // Include category details
+      },
+      orderBy: {
+        date: 'asc',
+      },
+    });
+
+    console.log('Plans fetched successfully:', plans);
+    return plans;
+  } catch (error) {
+    console.error('Error fetching plans:', error.message);
+    throw error; // Re-throw the error for the caller to handle
+  }
+};
+
 // Example usage
 (async () => {
   try {
-    const plan = await createPlan(1, 2, 500.0); // userId: 1, categoryId: 2, amount: 500.0
-    console.log('Created Plan:', plan);
+    const plans = await getPlansByUser(1); // userId: 1
+    console.log('Plans for User:', plans);
   } catch (error) {
-    console.error('Failed to create plan:', error.message);
+    console.error('Failed to fetch plans:', error.message);
   }
 })();

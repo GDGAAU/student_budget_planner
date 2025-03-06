@@ -1,20 +1,20 @@
 import prisma from '../lib/prisma.js';
 
 /**
- * Create a new expense.
+ * Create a new expense and update the user's budget.
  * @param {number} userId - The ID of the user creating the expense.
  * @param {number} categoryId - The ID of the category for the expense.
  * @param {number} amount - The amount of the expense.
  * @returns {Promise<Object>} - The created expense object or an error message.
  */
-export const createExpense = async (userId, categoryId, amount) => {
+export const createExpense = async (userId = 1, categoryId, amount) => {
   // Input validation
   if (!userId || !categoryId || !amount) {
     throw new Error('userId, categoryId, and amount are required.');
   }
 
-  if (typeof amount !== 'number' || amount <= 0) {
-    throw new Error('Amount must be a positive number.');
+  if (typeof amount !== 'number') {
+    throw new Error('Amount must be a number.');
   }
 
   try {
@@ -36,23 +36,46 @@ export const createExpense = async (userId, categoryId, amount) => {
       throw new Error('Category not found.');
     }
 
+    // Check if the user has sufficient budget
+    if (user.budget + amount < 0) {
+      throw new Error('Insufficient budget.');
+    }
+
     // Create the expense
     const newExpense = await prisma.expense.create({
       data: {
         amount,
         categoryId,
         userId,
-        // `date` is automatically set to `now()` by Prisma (default value in schema)
+      },
+    });
+
+    // Update the user's budget
+    const updatedUser = await prisma.user.update({
+      where: { id: userId },
+      data: {
+        budget: user.budget + amount, // Subtract the expense amount from the budget
       },
     });
 
     console.log('Expense created successfully:', newExpense);
+    console.log('Updated user budget:', updatedUser.budget);
     return newExpense;
   } catch (error) {
     console.error('Error creating expense:', error.message);
     throw error; // Re-throw the error for the caller to handle
   }
 };
+
+// Example usage
+(async () => {
+  try {
+    const expense = await createExpense(1, 2, -50.0); // userId: 1, categoryId: 2, amount: 100.0
+    console.log('Created Expense:', expense);
+  } catch (error) {
+    console.error('Failed to create expense:', error.message);
+  }
+})();
 
 /**
  * Update an existing expense.
@@ -67,8 +90,8 @@ export const updateExpense = async (expenseId, amount, categoryId) => {
     throw new Error('expenseId is required.');
   }
 
-  if (amount && (typeof amount !== 'number' || amount <= 0)) {
-    throw new Error('Amount must be a positive number.');
+  if (amount && typeof amount !== 'number') {
+    throw new Error('Amount must be a number.');
   }
 
   if (categoryId && typeof categoryId !== 'number') {
@@ -96,6 +119,7 @@ export const updateExpense = async (expenseId, amount, categoryId) => {
       }
     }
 
+    const oldAmount = existingExpense.amount;
     // Update the expense
     const updatedExpense = await prisma.expense.update({
       where: { id: expenseId },
@@ -103,6 +127,15 @@ export const updateExpense = async (expenseId, amount, categoryId) => {
         amount: amount !== undefined ? amount : existingExpense.amount,
         categoryId:
           categoryId !== undefined ? categoryId : existingExpense.categoryId,
+        date: Date.now(),
+      },
+    });
+
+    // Update the user's budget
+    const updatedUser = await prisma.user.update({
+      where: { id: 1 },
+      data: {
+        budget: user.budget - oldAmount + amount, // Subtract the expense amount from the budget
       },
     });
 
