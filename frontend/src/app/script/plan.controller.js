@@ -205,12 +205,42 @@ const getPlansByUser = async (userId) => {
   }
 };
 
-// Example usage
-(async () => {
+/**
+ * Fetch plans for today.
+ * @returns {Promise<Array<Object>>} - Array of plan objects for today.
+ */
+export const getPlansForToday = async () => {
   try {
-    const plans = await getPlansByUser(1); // userId: 1
-    console.log('Plans for User:', plans);
+    // Get the start and end of the current day
+    const now = new Date();
+    const startOfDay = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate(),
+    );
+    const endOfDay = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate() + 1,
+    );
+
+    // Fetch plans for today
+    const plans = await prisma.plan.findMany({
+      where: {
+        date: {
+          gte: startOfDay, // Greater than or equal to the start of the day
+          lt: endOfDay, // Less than the start of the next day
+        },
+      },
+      include: {
+        category: true, // Include category details
+      },
+    });
+
+    console.log('Plans for today fetched successfully:', plans);
+    return plans;
   } catch (error) {
-    console.error('Failed to fetch plans:', error.message);
+    console.error('Error fetching plans for today:', error.message);
+    throw error; // Re-throw the error for the caller to handle
   }
-})();
+};

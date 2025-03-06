@@ -192,9 +192,15 @@ export const getDailyExpense = async () => {
         category: true, // Include category details
       },
     });
+    // category name, amount
+    const dto = expenses.map((e) => ({
+      category: e.category.name,
+      amount: e.amount,
+    }));
 
+    console.log('Daily expenses fetched successfully:', dto);
+    return dto;
     // console.log('Daily expenses fetched successfully:', expenses);
-    return expenses;
   } catch (error) {
     console.error('Error fetching daily expenses:', error.message);
     throw error; // Re-throw the error for the caller to handle
@@ -236,7 +242,53 @@ export const getMonthlyExpense = async () => {
   }
 };
 
-export const getWeeklyExpenses = async () => {};
+/**
+ * Fetch weekly expenses for the current week.
+ * @returns {Promise<Array<Object>>} - Array of expense objects for the current week.
+ */
+export const getWeeklyExpenses = async () => {
+  try {
+    // Get the start and end of the current week
+    const now = new Date();
+    const startOfWeek = new Date(now);
+    startOfWeek.setHours(0, 0, 0, 0); // Set to the start of the day
+    startOfWeek.setDate(now.getDate() - now.getDay()); // Set to the first day of the week (Sunday)
+
+    const endOfWeek = new Date(startOfWeek);
+    endOfWeek.setDate(startOfWeek.getDate() + 7); // Set to the end of the week (next Sunday)
+
+    // Fetch expenses for the current week
+    const expenses = await prisma.expense.findMany({
+      where: {
+        date: {
+          gte: startOfWeek, // Greater than or equal to the start of the week
+          lt: endOfWeek, // Less than the start of the next week
+        },
+      },
+      include: {
+        category: true, // Include category details
+      },
+    });
+
+    console.log('Weekly expenses fetched successfully:', expenses);
+    return expenses;
+  } catch (error) {
+    console.error('Error fetching weekly expenses:', error.message);
+    throw error; // Re-throw the error for the caller to handle
+  } finally {
+    await prisma.$disconnect(); // Disconnect Prisma Client
+  }
+};
+
+// Example usage
+(async () => {
+  try {
+    const weeklyExpenses = await getWeeklyExpenses();
+    console.log('Weekly Expenses:', weeklyExpenses);
+  } catch (error) {
+    console.error('Failed to fetch weekly expenses:', error.message);
+  }
+})();
 
 export const deleteExpense = async (id) => {
   if (!id) {
