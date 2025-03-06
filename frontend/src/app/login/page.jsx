@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
+import { getAllCategories } from '../script/category.controller';
 
 const SignInPage = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -21,31 +22,29 @@ const SignInPage = () => {
     return Object.keys(newError).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     validateForm();
-    const login = async () => {
-      try {
-        const response = await fetch(
-          'https://student-budget-planner.onrender.com/api/v1/user/login',
-          {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ email, password }),
-          },
-        );
-        const data = await response.json();
-        if (!response.ok) {
-          setError({ login: 'Invalid Credintials. Try again!' });
-          return;
-        }
 
-        router.push('/');
-      } catch (error) {}
-    };
-    login();
+    try {
+      const response = await fetch(
+        'https://student-budget-planner.onrender.com/api/v1/user/login',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ email, password }),
+        },
+      );
+      const data = await response.json();
+      if (!response.ok) {
+        setError({ login: 'Invalid Credintials. Try again!' });
+        return;
+      }
+
+      router.push('/');
+    } catch (error) {}
   };
 
   return (

@@ -46,6 +46,7 @@ model Plan {
 model Category {
   id        Int      @id @default(autoincrement())
   name      String   @unique
+  image_url String
 
   // Relationships
   expenses  Expense[]
