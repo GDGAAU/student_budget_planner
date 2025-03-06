@@ -203,6 +203,9 @@ export const getDailyExpense = async () => {
   }
 };
 
+const result = await getDailyExpense();
+console.log(result);
+
 export const getMonthlyExpense = async () => {
   try {
     // Get the start and end of the current month

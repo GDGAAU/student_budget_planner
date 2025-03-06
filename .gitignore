@@ -1,1 +1,3 @@
 .env
+/frontend/prisma/dev.db
+/frontend/prisma/dev.db-journal
