@@ -80,6 +80,9 @@ export default function CategoryPage() {
     console.log(currentPlan);
     await createExpense(1, selectedCategory, parseFloat(currentPlan));
   };
+  const addBudget = async () => {
+    console.log(income);
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-r from-gray-50 to-red-50 p-4 sm:p-6">
@@ -134,6 +137,7 @@ export default function CategoryPage() {
             />
             <button
               type="submit"
+              onClick={() => addBudget()}
               className="w-full bg-green-500 text-white py-2 rounded-md hover:bg-green-600 transition-all shadow-md"
             >
               Add Income
