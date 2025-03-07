@@ -22,7 +22,7 @@ export default function NameiconPage() {
     };
     fetchData();
   }, []);
-  console.log("/icons/" + data[0].icon);
+  console.log("/icons/" + data[0]?.icon);
 
   console.log("datata", data);
 

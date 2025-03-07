@@ -32,24 +32,28 @@ const ExampleChart = () => {
     };
     fetchData();
   }, []);
-  console.log(data);
+  console.log("cata", data);
 
   return (
-    <div style={{ width: "50%", height: 400 }}>
-      <ResponsiveContainer width="100%" height="100%">
+    <div style={{ width: "100%", height: 400 }}>
+      <ResponsiveContainer width="50%" height="100%">
         <BarChart
           width={500}
           height={300}
           data={data}
           margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
         >
-          <CartesianGrid strokeDasharray="3 3" />
+          <CartesianGrid strokeDasharray="2 2" />
           <XAxis dataKey="category" />
           <YAxis />
           <Tooltip />
           <Legend />
-          <Bar dataKey="amount" stackId="a" fill="#8884d8" />
-          <Bar dataKey="planed" stackId="a" fill="#82ca9d" />
+          <Bar
+            className="mx-4 bg-[#196981]"
+            dataKey="amount"
+            stackId="a"
+            fill="#196981"
+          />
         </BarChart>
       </ResponsiveContainer>
     </div>

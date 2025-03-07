@@ -11,7 +11,7 @@ import BudgetPage from "../../components/BudgetCard";
 
 export default function Home() {
   return (
-    <>
+    <div>
       <NameImagePage />
       <HomeSavingCard />
       <AddNewBudget />
@@ -22,6 +22,6 @@ export default function Home() {
       <SquareCategoryCard title="Food" />
       <CategoryBudget />
       <BudgetPage />
-    </>
+    </div>
   );
 }

@@ -24,7 +24,7 @@ const AddNewBudget = () => {
       <div className="mt-1 space-y-3">
         {/* Earned Bar */}
         <div className="flex items-center justify-between">
-          <span className="text-white text-sm font-medium bg-green-600 px-3 my-2 rounded-full">
+          <span className="text-white text-sm font-medium bg-green-600 px-2 my-4 rounded-full">
             New
           </span>
         </div>

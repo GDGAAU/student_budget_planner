@@ -1,11 +1,12 @@
 "use client";
 
-import { Dela_Gothic_One } from "next/font/google";
 import { useState, useCallback, useEffect, use } from "react";
 import classes from "./page.module.css";
 import { getAllCategories } from "../script/category.controller";
 import { createExpense } from "../script/expense.controller";
-export default function CategoryPage() {
+import ExampleChart from "../../../components/Graph";
+import LineChartComponent from "../../../components/WeekGraph";
+function CategoryPage() {
   const [selectedSection, setSelectedSection] = useState("Expenses");
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [categoryPlans, setCategoryPlans] = useState({});
@@ -27,7 +28,7 @@ export default function CategoryPage() {
     };
     fetchData();
   }, []);
-  console.log(categories);
+  console.log("category", categories);
 
   // Handle category click
   const handleCategoryClick = useCallback(
@@ -85,9 +86,9 @@ export default function CategoryPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-r from-gray-50 to-red-50 p-4 sm:p-6">
+    <div className=" p-4 sm:p-6">
       {/* Section Toggle Buttons */}
-      <div className="flex justify-center gap-4 mb-8">
+      <div className="flex justify-center">
         {["Expenses", "Income"].map((section) => (
           <button
             key={section}
@@ -107,14 +108,14 @@ export default function CategoryPage() {
 
       {/* Expenses Section */}
       {selectedSection === "Expenses" && (
-        <div className="max-w-2xl mx-auto bg-white p-6 rounded-lg shadow-lg">
-          <h2 className="text-xl font-semibold mb-4">Expenses</h2>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-            {categories.map(({ id, name, image }) => (
+        <div className="mx-auto bg-white p-6 rounded-lg ">
+          <h2 className="text-xl font-semibold ">Expenses</h2>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {categories.map(({ id, name, icon }) => (
               <CategoryCard
                 key={id}
                 name={name}
-                img={image}
+                img={`/icons/${icon}`}
                 onClick={() => handleCategoryClick(id, name)}
                 plan={categoryPlans[name]}
               />
@@ -125,7 +126,7 @@ export default function CategoryPage() {
 
       {/* Income Section */}
       {selectedSection === "Income" && (
-        <div className="max-w-2xl mx-auto bg-white p-6 rounded-lg shadow-lg">
+        <div className="max-w-2xl mx-auto bg-white rounded-lg shadow-lg">
           <h2 className="text-xl font-semibold mb-4">Income</h2>
           <form onSubmit={handleIncomeSubmit} className="space-y-4">
             <input
@@ -149,7 +150,7 @@ export default function CategoryPage() {
       {/* Modal for Category Plan */}
       {isModalOpen && selectedCategory && (
         <Modal onClose={() => setIsModalOpen(false)}>
-          <h3 className="text-lg font-semibold mb-4">
+          <h3 className="text-lg font-semibold ">
             Plan for {selectedCategory}
           </h3>
           <form onSubmit={handlePlanSubmit} className="space-y-4">
@@ -191,7 +192,7 @@ function CategoryCard({ id, name, img, onClick, plan }) {
       onClick={onClick}
       className="cursor-pointer border rounded-lg p-4 shadow-md hover:shadow-lg hover:scale-105 hover:bg-gray-50 transition-all duration-300"
     >
-      <img src={img} alt={name} className="w-20 h-20 mx-auto mb-2 rounded-lg" />
+      <img src={img} alt={name} className="w-20 h-20 mx-auto rounded-lg" />
       <h3 className="text-center font-semibold">{name}</h3>
       {plan && (
         <p className="text-sm text-center text-gray-600">Plan: ${plan}</p>
@@ -217,6 +218,16 @@ function Modal({ children, onClose }) {
           ✕
         </button>
       </div>
+    </div>
+  );
+}
+
+export default function CatGraph() {
+  return (
+    <div>
+      <CategoryPage />
+      <ExampleChart />
+      <LineChartComponent />
     </div>
   );
 }

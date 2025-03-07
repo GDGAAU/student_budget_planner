@@ -2,12 +2,12 @@
 import { getAllExpenses } from "@/app/script/expense.controller";
 import React, { useEffect, useState } from "react";
 
-const BudgetCard = ({ category, expense, amount, date }) => {
+const BudgetCard = ({ category, expense, date }) => {
   // Format date to display it properly (example: "27/10/2025")
   const formattedDate = new Date(date).toLocaleDateString();
 
   return (
-    <div className="flex text-[#dd7600] items-center justify-between bg-[#ffffff18] shadow-md p-2 w-full max-w-lg border border-gray-200 px-8">
+    <div className="flex text-[#dd7600] items-center justify-between bg-[#ffffff18] shadow-md p-2 w-full  border border-gray-200 px-8 ">
       {/* Category Name & Icon */}
       <div className="flex items-center gap-3">
         <div>
@@ -47,7 +47,7 @@ export default function BudgetPage() {
 
   // This will handle the dynamic generation of BudgetCards from fetched data
   return (
-    <div className="p-6 flex flex-col gap-4 items-center ">
+    <div className="p-6 flex flex-col gap-2 items-center mx-5 ">
       {expenses.map((expenseData) => (
         <BudgetCard
           key={expenseData.id}

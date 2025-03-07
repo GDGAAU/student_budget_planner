@@ -1,6 +1,6 @@
-'use client';
-import { useState, useEffect } from 'react';
-import { getBudgetAndExpenses } from '@/app/script/expense.controller';
+"use client";
+import { useState, useEffect } from "react";
+import { getBudgetAndExpenses } from "@/app/script/expense.controller";
 
 const HomeSavingCard = () => {
   const [budget, setBudget] = useState(0);
@@ -28,7 +28,7 @@ const HomeSavingCard = () => {
   if (error) return <div>Error: {error.message}</div>;
 
   return (
-    <div className="bg-white p-6 rounded-2xl shadow-lg w-100 h-84">
+    <div className="bg-white p-6 rounded-2xl shadow-lg w-100 mx-10">
       <h3 className="text-gray-500 text-sm">Your Budget</h3>
       <h2 className="text-3xl font-bold mt-1">${budget}</h2>
 
