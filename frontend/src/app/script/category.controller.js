@@ -1,5 +1,5 @@
-'use server';
-import prisma from '../lib/prisma.js';
+"use server";
+import prisma from "../lib/prisma.js";
 
 /**
  * Fetch all categories with their IDs and names.
@@ -12,20 +12,21 @@ export const getAllCategories = async () => {
       select: {
         id: true,
         name: true,
+        icon: true,
       },
     });
 
-    console.log('Categories fetched successfully:', categories);
+    console.log("Categories fetched successfully:", categories);
     return categories;
   } catch (error) {
-    console.error('Error fetching categories:', error.message);
+    console.error("Error fetching categories:", error.message);
     throw error; // Re-throw the error for the caller to handle
   }
 };
 
 export const addCategory = async (name) => {
   if (!name) {
-    throw new Error('vategory name is required');
+    throw new Error("vategory name is required");
   }
   try {
     const newCategory = await prisma.category.create({
@@ -33,23 +34,23 @@ export const addCategory = async (name) => {
         name,
       },
     });
-    console.log('Category Created!', newCategory);
+    console.log("Category Created!", newCategory);
     return newCategory;
   } catch (error) {
-    console.log('Error adding category', error);
+    console.log("Error adding category", error);
   }
 };
 
 export const deleteCategory = async (id) => {
   if (!id) {
-    throw new Error('id is required');
+    throw new Error("id is required");
   }
   try {
     const category = await prisma.category.delete({
       where: { id },
     });
-    console.log('Category deleted successfully', category);
+    console.log("Category deleted successfully", category);
   } catch (error) {
-    console.error('Error deleting category');
+    console.error("Error deleting category");
   }
 };

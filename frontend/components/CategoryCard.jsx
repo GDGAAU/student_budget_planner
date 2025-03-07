@@ -3,7 +3,7 @@ import { getAllCategories } from "@/app/script/category.controller";
 import { createPlan } from "@/app/script/plan.controller";
 import { useState, useEffect } from "react";
 
-export default function NameImagePage() {
+export default function NameiconPage() {
   const [data, setData] = useState([]); // Initialize as an empty array
   const [inputs, setInputs] = useState([]);
 
@@ -13,10 +13,18 @@ export default function NameImagePage() {
       setData(categories);
 
       // Initialize inputs with corresponding categories
-      setInputs(categories.map((category) => ({ id: category.id, amount: 0 })));
+      setInputs(
+        categories.map((category) => ({
+          id: category.id,
+          amount: 0,
+        }))
+      );
     };
     fetchData();
   }, []);
+  console.log("/icons/" + data[0].icon);
+
+  console.log("datata", data);
 
   const handleInputChange = (index, value) => {
     const intValue = value.replace(/\D/g, ""); // Remove non-numeric characters
@@ -39,12 +47,12 @@ export default function NameImagePage() {
   return (
     <div className="w-[50%]">
       <div className="bg-gray-50 p-6 flex flex-col gap-2">
-        {data.map(({ id, name, image }, index) => (
+        {data.map(({ id, name, icon }, index) => (
           <div
             key={id}
             className="bg-gradient-to-tl from-[#ffb004] to-[#fff9a4] rounded-xl shadow-lg text-center flex p-3"
           >
-            <img src={image} alt={name} className="w-20 h-20" />
+            <img src={`/icons/${icon}`} alt={name} className="w-20 h-20" />
             <p className="text-lg font-semibold my-auto">{name}</p>
             <div className="my-auto ml-auto w-[30%]">
               <input

@@ -4,7 +4,8 @@ CREATE TABLE "User" (
     "name" TEXT NOT NULL,
     "email" TEXT NOT NULL,
     "password" TEXT NOT NULL,
-    "budget" REAL NOT NULL DEFAULT 0
+    "budget" REAL NOT NULL DEFAULT 0,
+    "badges" TEXT NOT NULL
 );
 
 -- CreateTable
@@ -32,7 +33,9 @@ CREATE TABLE "Plan" (
 -- CreateTable
 CREATE TABLE "Category" (
     "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-    "name" TEXT NOT NULL
+    "name" TEXT NOT NULL,
+    "icon" TEXT NOT NULL,
+    "color" TEXT
 );
 
 -- CreateIndex
