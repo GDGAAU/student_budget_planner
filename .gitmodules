@@ -1,0 +1,3 @@
+[submodule "budget-planner-mobile/hackathon_mobile"]
+	path = budget-planner-mobile/hackathon_mobile
+	url = https://github.com/m21power/student-budget-planner-mobile.git
