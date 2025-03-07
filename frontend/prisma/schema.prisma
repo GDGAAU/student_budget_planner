@@ -13,6 +13,7 @@ model User {
   email    String   @unique
   password String
   budget   Float   @default(0)
+   badges   String   
 
   // Relationships
   expenses Expense[]
@@ -46,6 +47,8 @@ model Plan {
 model Category {
   id        Int      @id @default(autoincrement())
   name      String   @unique
+  icon      String
+  color     String?
 
   // Relationships
   expenses  Expense[]
