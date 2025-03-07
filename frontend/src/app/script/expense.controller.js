@@ -143,18 +143,30 @@ export const updateExpense = async (expenseId, amount, categoryId) => {
 
 export const getAllExpenses = async () => {
   try {
-    // Fetch all expenses
+    // Fetch all expenses along with category name and the date
     const expenses = await prisma.expense.findMany({
       select: {
         id: true,
         amount: true,
         categoryId: true,
         userId: true,
+        date: true, // assuming 'expenseDate' or 'createdAt' is the field for the date
+        category: {
+          select: {
+            name: true, // Assuming 'name' is the column for the category name
+          },
+        },
       },
     });
 
-    console.log("Expenses fetched successfully:", expenses);
-    return expenses;
+    // Map the expenses to include the category name in the result
+    const mappedExpenses = expenses.map((expense) => ({
+      ...expense,
+      category: expense.category.name, // Add category name to the expense data
+    }));
+
+    console.log("Expenses fetched successfully:", mappedExpenses);
+    return mappedExpenses;
   } catch (error) {
     console.error("Error fetching expenses:", error.message);
     throw error; // Re-throw the error for the caller to handle

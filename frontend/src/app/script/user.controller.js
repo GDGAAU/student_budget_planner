@@ -1,5 +1,5 @@
-'use server';
-import prisma from '../lib/prisma.js';
+"use server";
+import prisma from "../lib/prisma.js";
 
 export const createUser = async (id, fullname, email, budget, password) => {
   try {
@@ -12,21 +12,34 @@ export const createUser = async (id, fullname, email, budget, password) => {
         budget,
       },
     });
-    console.log('User created successfully', result);
+    console.log("User created successfully", result);
   } catch (error) {
-    console.error('Error creating user', error);
+    console.error("Error creating user", error);
   }
 };
 
-export const updateUser = async (id, newData) => {
+export const updateUser = async (newData) => {
   try {
-    const user = await prisma.user.update({
-      where: { id },
-      data: { budget: newData.budget },
+    // Fetch the existing user to get the current budget
+    const user = await prisma.user.findUnique({
+      where: { id: 1 },
+      select: { budget: true },
     });
-    console.log('User updated successfully', user);
+
+    // Add newData.budget to the existing budget
+    const updatedBudget = user.budget + newData;
+
+    // Update user with the new budget
+    const updatedUser = await prisma.user.update({
+      where: { id: 1 },
+      data: { budget: updatedBudget },
+    });
+
+    console.log("User budget updated successfully", updatedUser);
+    return updatedUser;
   } catch (error) {
-    console.error('Error updating user', error);
+    console.error("Error updating user budget", error);
+    throw error;
   }
 };
 
@@ -42,7 +55,7 @@ const addBadgesToUser = async (badges) => {
     const user = await prisma.user.findFirst();
 
     if (!user) {
-      throw new Error('User not found.');
+      throw new Error("User not found.");
     }
 
     // Parse the existing badges (if any)
@@ -59,10 +72,10 @@ const addBadgesToUser = async (badges) => {
       },
     });
 
-    console.log('Badges added successfully:', updatedUser);
+    console.log("Badges added successfully:", updatedUser);
     return updatedUser;
   } catch (error) {
-    console.error('Error adding badges:', error.message);
+    console.error("Error adding badges:", error.message);
     throw error;
   } finally {
     await prisma.$disconnect();
@@ -79,15 +92,15 @@ const getUserBadges = async () => {
     const user = await prisma.user.findFirst();
 
     if (!user) {
-      throw new Error('User not found.');
+      throw new Error("User not found.");
     }
 
     // Parse the badges JSON string
     const badges = user.badges ? JSON.parse(user.badges) : [];
-    console.log('User badges:', badges);
+    console.log("User badges:", badges);
     return badges;
   } catch (error) {
-    console.error('Error fetching badges:', error.message);
+    console.error("Error fetching badges:", error.message);
     throw error;
   } finally {
     await prisma.$disconnect();
