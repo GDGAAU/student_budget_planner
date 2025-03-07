@@ -1,38 +1,38 @@
-'use client';
-import { useState } from 'react';
-import { FaEye, FaEyeSlash } from 'react-icons/fa';
+"use client";
+import { useState } from "react";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 const SignUpPage = () => {
   const [showPassword, setShowPassword] = useState(false);
-  const [email, setEmail] = useState('');
-  const [name, setName] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [name, setName] = useState("");
+  const [password, setPassword] = useState("");
 
   const handleSubmit = (e) => {
     e.preventDefault();
     // Handle form submission, e.g., send data to an API
     const signUp = async () => {
       const response = await fetch(
-        'https://student-budget-planner.onrender.com/api/v1/user/register',
+        "https://student-budget-planner.onrender.com/api/v1/user/register",
         {
-          method: 'POST',
+          method: "POST",
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
           },
           body: JSON.stringify({
             name,
             email,
             password,
           }),
-        },
+        }
       );
 
       if (response.ok) {
         // Handle successful response
-        console.log('User registered successfully');
+        console.log("User registered successfully");
       } else {
         // Handle error response
-        console.error('Failed to register user');
+        console.error("Failed to register user");
       }
     };
 
@@ -40,7 +40,7 @@ const SignUpPage = () => {
   };
 
   return (
-    <div className="flex items-center justify-center h-screen">
+    <div className="flex items-center justify-center h-screen w-[1500px] mx-auto">
       <div className="bg-white bg-opacity-10 backdrop-blur-md p-8 rounded-2xl shadow-lg w-full max-w-md text-center">
         {/* Title */}
         <h1 className="text-2xl font-bold ">Create Your Account</h1>
@@ -75,7 +75,7 @@ const SignUpPage = () => {
           {/* Password Input */}
           <div className="relative">
             <input
-              type={showPassword ? 'text' : 'password'}
+              type={showPassword ? "text" : "password"}
               placeholder="Password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -101,7 +101,7 @@ const SignUpPage = () => {
 
           {/* Login Link */}
           <p className=" text-sm mt-4">
-            Already have an account?{' '}
+            Already have an account?{" "}
             <a href="/login" className="underline font-semibold">
               Login
             </a>

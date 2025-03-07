@@ -208,12 +208,12 @@ function Modal({ children, onClose }) {
       className={`fixed inset-0 flex items-center justify-center ${classes.modal}`}
     >
       <div
-        className={` rounded-2xl p-6 w-11/12 sm:w-96 shadow-2xl relative ${classes.card}`}
+        className={` rounded-2xl p-6 w-11/12 sm:w-96 shadow-2xl relative border-2 border-white`}
       >
         {children}
         <button
           onClick={onClose}
-          className="absolute top-3 right-3 text-white bg-black bg-opacity-30 hover:bg-opacity-50 p-2 rounded-full transition-all"
+          className="absolute flex justify-center items-center w-8 h-8 top-3 right-3 text-white bg-black bg-opacity-30 hover:bg-opacity-50 p-2 rounded-full transition-all"
         >
           ✕
         </button>
