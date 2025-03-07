@@ -1,6 +1,6 @@
-'use server';
-import { selectClasses } from '@mui/material';
-import prisma from '../lib/prisma.js';
+"use server";
+import { selectClasses } from "@mui/material";
+import prisma from "../lib/prisma.js";
 
 /**
  * Create a new expense and update the user's budget.
@@ -12,11 +12,11 @@ import prisma from '../lib/prisma.js';
 export const createExpense = async (userId = 1, categoryId, amount) => {
   // Input validation
   if (!userId || !categoryId || !amount) {
-    throw new Error('userId, categoryId, and amount are required.');
+    throw new Error("userId, categoryId, and amount are required.");
   }
 
-  if (typeof amount !== 'number') {
-    throw new Error('Amount must be a number.');
+  if (typeof amount !== "number") {
+    throw new Error("Amount must be a number.");
   }
 
   try {
@@ -26,7 +26,7 @@ export const createExpense = async (userId = 1, categoryId, amount) => {
     });
 
     if (!user) {
-      throw new Error('User not found.');
+      throw new Error("User not found.");
     }
 
     // Check if the category exists
@@ -35,12 +35,12 @@ export const createExpense = async (userId = 1, categoryId, amount) => {
     });
 
     if (!category) {
-      throw new Error('Category not found.');
+      throw new Error("Category not found.");
     }
 
     // Check if the user has sufficient budget
     if (user.budget + amount < 0) {
-      throw new Error('Insufficient budget.');
+      throw new Error("Insufficient budget.");
     }
 
     // Create the expense
@@ -60,11 +60,11 @@ export const createExpense = async (userId = 1, categoryId, amount) => {
       },
     });
 
-    console.log('Expense created successfully:', newExpense);
-    console.log('Updated user budget:', updatedUser.budget);
+    console.log("Expense created successfully:", newExpense);
+    console.log("Updated user budget:", updatedUser.budget);
     return newExpense;
   } catch (error) {
-    console.error('Error creating expense:', error.message);
+    console.error("Error creating expense:", error.message);
     throw error; // Re-throw the error for the caller to handle
   }
 };
@@ -79,15 +79,15 @@ export const createExpense = async (userId = 1, categoryId, amount) => {
 export const updateExpense = async (expenseId, amount, categoryId) => {
   // Input validation
   if (!expenseId) {
-    throw new Error('expenseId is required.');
+    throw new Error("expenseId is required.");
   }
 
-  if (amount && typeof amount !== 'number') {
-    throw new Error('Amount must be a number.');
+  if (amount && typeof amount !== "number") {
+    throw new Error("Amount must be a number.");
   }
 
-  if (categoryId && typeof categoryId !== 'number') {
-    throw new Error('categoryId must be a number.');
+  if (categoryId && typeof categoryId !== "number") {
+    throw new Error("categoryId must be a number.");
   }
 
   try {
@@ -97,7 +97,7 @@ export const updateExpense = async (expenseId, amount, categoryId) => {
     });
 
     if (!existingExpense) {
-      throw new Error('Expense not found.');
+      throw new Error("Expense not found.");
     }
 
     // Check if the new category exists (if categoryId is provided)
@@ -107,7 +107,7 @@ export const updateExpense = async (expenseId, amount, categoryId) => {
       });
 
       if (!category) {
-        throw new Error('Category not found.');
+        throw new Error("Category not found.");
       }
     }
 
@@ -131,10 +131,10 @@ export const updateExpense = async (expenseId, amount, categoryId) => {
       },
     });
 
-    console.log('Expense updated successfully:', updatedExpense);
+    console.log("Expense updated successfully:", updatedExpense);
     return updatedExpense;
   } catch (error) {
-    console.error('Error updating expense:', error.message);
+    console.error("Error updating expense:", error.message);
     throw error; // Re-throw the error for the caller to handle
   } finally {
     await prisma.$disconnect(); // Disconnect Prisma Client
@@ -153,10 +153,10 @@ export const getAllExpenses = async () => {
       },
     });
 
-    console.log('Expenses fetched successfully:', expenses);
+    console.log("Expenses fetched successfully:", expenses);
     return expenses;
   } catch (error) {
-    console.error('Error fetching expenses:', error.message);
+    console.error("Error fetching expenses:", error.message);
     throw error; // Re-throw the error for the caller to handle
   }
 };
@@ -171,12 +171,12 @@ export const getDailyExpense = async (now = new Date()) => {
     const startOfDay = new Date(
       now.getFullYear(),
       now.getMonth(),
-      now.getDate(),
+      now.getDate()
     );
     const endOfDay = new Date(
       now.getFullYear(),
       now.getMonth(),
-      now.getDate() + 1,
+      now.getDate() + 1
     );
 
     // Fetch expenses for the current day
@@ -198,10 +198,10 @@ export const getDailyExpense = async (now = new Date()) => {
       amount: e.amount,
     }));
 
-    console.log('Daily expenses fetched successfully:', dto);
+    console.log("Daily expenses fetched successfully:", dto);
     return dto;
   } catch (error) {
-    console.error('Error fetching daily expenses:', error.message);
+    console.error("Error fetching daily expenses:", error.message);
     throw error; // Re-throw the error for the caller to handle
   } finally {
     await prisma.$disconnect(); // Disconnect Prisma Client
@@ -234,7 +234,7 @@ export const getMonthlyExpense = async () => {
     // console.log('Monthly expenses fetched successfully:', expenses);
     return expenses;
   } catch (error) {
-    console.error('Error fetching monthly expenses:', error.message);
+    console.error("Error fetching monthly expenses:", error.message);
     throw error; // Re-throw the error for the caller to handle
   } finally {
     await prisma.$disconnect(); // Disconnect Prisma Client
@@ -250,38 +250,46 @@ export const getWeeklyExpenses = async () => {
     // Get the start and end of the current week
     const now = new Date();
     const startOfWeek = new Date(now);
-    startOfWeek.setHours(0, 0, 0, 0); // Set to the start of the day
-    startOfWeek.setDate(now.getDate() - now.getDay()); // Set to the first day of the week (Sunday)
+    startOfWeek.setHours(0, 0, 0, 0);
+    startOfWeek.setDate(now.getDate() - now.getDay());
 
     const endOfWeek = new Date(startOfWeek);
-    endOfWeek.setDate(startOfWeek.getDate() + 7); // Set to the end of the week (next Sunday)
+    endOfWeek.setDate(startOfWeek.getDate() + 7);
 
     // Fetch expenses for the current week
     const expenses = await prisma.expense.findMany({
       where: {
         date: {
-          gte: startOfWeek, // Greater than or equal to the start of the week
-          lt: endOfWeek, // Less than the start of the next week
+          gte: startOfWeek,
+          lt: endOfWeek,
         },
       },
-      include: {
-        category: true, // Include category details
+      select: {
+        date: true,
+        amount: true,
       },
     });
 
-    // Map expenses to a simpler DTO (Data Transfer Object)
-    const dto = expenses.map((e) => ({
-      category: e.category.name,
-      amount: e.amount,
+    // Group expenses by date and sum amounts
+    const groupedExpenses = expenses.reduce((acc, expense) => {
+      const dateKey = expense.date.toISOString().split("T")[0]; // Convert date to YYYY-MM-DD format
+      acc[dateKey] = (acc[dateKey] || 0) + expense.amount;
+      return acc;
+    }, {});
+
+    // Convert the grouped object into an array
+    const result = Object.entries(groupedExpenses).map(([date, amount]) => ({
+      date,
+      amount,
     }));
 
-    console.log('Weekly expenses fetched successfully:', dto);
-    return dto;
+    console.log("Weekly expenses fetched successfully:", result);
+    return result;
   } catch (error) {
-    console.error('Error fetching weekly expenses:', error.message);
-    throw error; // Re-throw the error for the caller to handle
+    console.error("Error fetching weekly expenses:", error.message);
+    throw error;
   } finally {
-    await prisma.$disconnect(); // Disconnect Prisma Client
+    await prisma.$disconnect();
   }
 };
 
@@ -289,22 +297,22 @@ export const getWeeklyExpenses = async () => {
 (async () => {
   try {
     const weeklyExpenses = await getWeeklyExpenses();
-    console.log('Weekly Expenses:', weeklyExpenses);
+    console.log("Weekly Expenses:", weeklyExpenses);
   } catch (error) {
-    console.error('Failed to fetch weekly expenses:', error.message);
+    console.error("Failed to fetch weekly expenses:", error.message);
   }
 })();
 
 export const deleteExpense = async (id) => {
   if (!id) {
-    throw new Error('id is required');
+    throw new Error("id is required");
   }
   try {
     const expense = await prisma.expense.delete({
       where: { id },
     });
-    console.log('Expense deleted successfully', expense);
+    console.log("Expense deleted successfully", expense);
   } catch (error) {
-    console.error('Error deleting expense');
+    console.error("Error deleting expense");
   }
 };
