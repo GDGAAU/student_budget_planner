@@ -44,16 +44,27 @@ export default function Home() {
 
     try {
       // Simulate sending the prompt to an AI API
-      const response = await fetch("/api/ai", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ prompt: aiPrompt }),
-      });
+      const response = await fetch(
+        "https://student-budget-planner.onrender.com/api/v1/user/ask-gemini",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ message: aiPrompt }),
+        }
+      );
 
       const data = await response.json();
-      setAiResponse(data.response); // Set the AI response
+      console.log(typeof data);
+      console.log(data);
+      //   setAiResponse(data || "No response from AI"); // Set the AI response
+      //   console.log("Update aiResponse:", aiResponse);
+      if (data && typeof data === "string") {
+        setAiResponse(data);
+      } else {
+        setAiResponse("Unexpected response format.");
+      }
     } catch (error) {
       console.error("Error sending prompt to AI:", error);
       setAiResponse("Failed to get a response from the AI.");
@@ -348,7 +359,7 @@ export default function Home() {
       {/* AI Prompt Section */}
       <section
         id="ai-prompt"
-        className={`py-24 px-4 bg-gradient-to-br from-white via-purple-600 to-white text-white transition-all duration-1000 rounded-2xl ${
+        className={`py-24 px-4 bg-gradient-to-br from-gray-200 via-purple-600 to-gray-300 text-black transition-all duration-1000 rounded-2xl ${
           isVisible["ai-prompt"]
             ? "opacity-100 translate-y-0"
             : "opacity-0 translate-y-10"
@@ -369,12 +380,12 @@ export default function Home() {
               value={aiPrompt}
               onChange={(e) => setAiPrompt(e.target.value)}
               placeholder="Enter your financial question..."
-              className="h-14 px-6 rounded-full text-white w-full md:w-96 focus:outline-none focus:ring-2 focus:ring-white/20"
+              className="h-14 px-8 rounded-full text-black text-2xl w-full md:w-96 focus:outline-none focus:ring-2 focus:ring-white/20"
               required
             />
             <button
               type="submit"
-              className="h-14 px-8 rounded-full bg-white text-blue-700 hover:bg-opacity-90 font-semibold transition-all transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-white/20"
+              className="h-14 px-8 rounded-full bg-white text-black text-2xl hover:bg-opacity-90 font-bold transition-all transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-white/20"
             >
               Send
             </button>
@@ -382,7 +393,7 @@ export default function Home() {
           {aiResponse && (
             <div className="mt-8 p-6 bg-white/10 rounded-lg text-left">
               <h3 className="text-2xl font-semibold mb-4">AI Response:</h3>
-              <p className="text-gray-200">{aiResponse}</p>
+              <p className="text-black">{aiResponse}</p>
             </div>
           )}
         </div>
