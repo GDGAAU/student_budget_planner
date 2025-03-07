@@ -163,12 +163,11 @@ export const getAllExpenses = async () => {
 
 /**
  * Fetch daily expenses for the current day.
+ * @param {Date} now - The current date (optional).
  * @returns {Promise<Array<Object>>} - Array of expense objects for the current day.
  */
-export const getDailyExpense = async () => {
+export const getDailyExpense = async (now = new Date()) => {
   try {
-    // Get the start and end of the current day
-    const now = new Date();
     const startOfDay = new Date(
       now.getFullYear(),
       now.getMonth(),
@@ -192,7 +191,8 @@ export const getDailyExpense = async () => {
         category: true, // Include category details
       },
     });
-    // category name, amount
+
+    // Map expenses to a simpler DTO (Data Transfer Object)
     const dto = expenses.map((e) => ({
       category: e.category.name,
       amount: e.amount,
@@ -200,7 +200,6 @@ export const getDailyExpense = async () => {
 
     console.log('Daily expenses fetched successfully:', dto);
     return dto;
-    // console.log('Daily expenses fetched successfully:', expenses);
   } catch (error) {
     console.error('Error fetching daily expenses:', error.message);
     throw error; // Re-throw the error for the caller to handle
@@ -270,8 +269,14 @@ export const getWeeklyExpenses = async () => {
       },
     });
 
-    console.log('Weekly expenses fetched successfully:', expenses);
-    return expenses;
+    // Map expenses to a simpler DTO (Data Transfer Object)
+    const dto = expenses.map((e) => ({
+      category: e.category.name,
+      amount: e.amount,
+    }));
+
+    console.log('Weekly expenses fetched successfully:', dto);
+    return dto;
   } catch (error) {
     console.error('Error fetching weekly expenses:', error.message);
     throw error; // Re-throw the error for the caller to handle
